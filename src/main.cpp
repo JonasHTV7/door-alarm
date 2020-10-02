@@ -30,60 +30,73 @@ void loop() {
   key_status = digitalRead(button);
   
   if (key_status == HIGH) {
-    Serial.println("Button is pressed");
+    // Button is pressed
     digitalWrite(green, HIGH);
     digitalWrite(red, LOW);
     
     if (door_open == HIGH) {
-      Serial.println("Door is open");
+      // Door is open
       if (already_open == false) {
         // door has been opened
+        Serial.println("[Down][  Were ][ Open ]");
         // play opening tune
+        Serial.println("Opening Tune");
         already_open = true;
       }
       else /* already_open == true */ {
-        Serial.println("Door were already open");
+        // Door were already open
+        Serial.println("[Down][Already][ Open ]");
       }
     }
     else /* (door_open == LOW) */ {
-      Serial.println("Door is closed");
+      // Door is closed
       if (already_open == true) {
-        Serial.println("Door has been closed");
+        // Door has been closed
+        Serial.println("[Down][Already][Closed]");
         // play closing tune
+        Serial.println("Closing Tune");
         already_open = false;
       }
       else /* (already_open == false) */ {
-        Serial.println("Door already closed");
+        // Door already closed
+        Serial.println("[Down][  Were ][Closed]");
       }
     }
   }
   else /* (key_status == LOW) */ {
-    Serial.println("Button is not pressed");
+    // Button is not pressed
     if (door_open == HIGH) {
-      Serial.println("Door is open"); 
+      // Door is open
       if (already_open == true) {
-        Serial.println("Door were already open");
+        // Door were already open
+        Serial.println("[ Up ][Already][ Open ]");
         // alarm doesn't play
       }
       else /* (already_open == false) */ {
-        Serial.println("Door wasn't already open");
+        // Door wasn't already open
+        Serial.println("[ Up ][  Were ][ Open ]");
+        Serial.println("Alarm");
         // Blinks between green and red lights
         // loop intruder tune
         // stops when button is pressed a.k.a. key_status == true
       }
     }
     else /* (door_open == LOW) */ {
-      Serial.println("Door is closed");
+      // Door is closed
       if (already_open == true) {
-        Serial.println("Door has been closed");
+        // Door has been closed
+        Serial.println("[ Up ][Already][Closed]");
         digitalWrite(red, HIGH);
         digitalWrite(green, LOW);
         //play closing tune
+        Serial.println("Closing Tune");
         already_open = false;
       }
       else /* (already_open == false) */ {
-        Serial.println("Door were already closed");
+        // Door were already closed
+        Serial.println("[ Up ][  Were ][Closed]");
       } 
     } 
   }
+  delay(1000);
 }
