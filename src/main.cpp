@@ -10,6 +10,10 @@ int door_open; // Magnetic sensor
 int key_status; // Button
 bool already_open = false; // Previous status
 
+const int blink_time = 500;
+const int check_time = 250;
+const int alarm_time = blink_time / 1.3;
+
 void setup() {
   // put your setup code here, to run once:
   pinMode(button, INPUT);
@@ -38,28 +42,40 @@ void loop() {
       // Door is open
       if (already_open == false) {
         // door has been opened
-        Serial.println("[Down][  Were ][ Open ]");
+        // Serial.println("[Down][  Were ][ Open ]");
+        already_open = true;
+        
         // play opening tune
         Serial.println("Opening Tune");
-        already_open = true;
+        tone(buzzor, 247, 250);
+        delay(325);
+        tone(buzzor, 262, 250);
+        delay(325);
       }
       else /* already_open == true */ {
         // Door were already open
-        Serial.println("[Down][Already][ Open ]");
+        // Serial.println("[Down][Already][ Open ]");
       }
     }
     else /* (door_open == LOW) */ {
       // Door is closed
       if (already_open == true) {
         // Door has been closed
-        Serial.println("[Down][Already][Closed]");
+        // Serial.println("[Down][Already][Closed]");
+        digitalWrite(red, HIGH);
+        digitalWrite(green, LOW);
+        already_open = false;
+
         // play closing tune
         Serial.println("Closing Tune");
-        already_open = false;
+        tone(buzzor, 262, 250);
+        delay(325);
+        tone(buzzor, 247, 250);
+        delay(325);
       }
       else /* (already_open == false) */ {
         // Door already closed
-        Serial.println("[Down][  Were ][Closed]");
+        // Serial.println("[Down][  Were ][Closed]");
       }
     }
   }
@@ -69,13 +85,35 @@ void loop() {
       // Door is open
       if (already_open == true) {
         // Door were already open
-        Serial.println("[ Up ][Already][ Open ]");
+        // Serial.println("[ Up ][Already][ Open ]");
         // alarm doesn't play
       }
       else /* (already_open == false) */ {
         // Door wasn't already open
-        Serial.println("[ Up ][  Were ][ Open ]");
+        // Serial.println("[ Up ][  Were ][ Open ]");
+
+        // play alarm
         Serial.println("Alarm");
+        while (key_status == LOW) {
+          digitalWrite(red, HIGH);
+          digitalWrite(green, LOW);
+          
+          tone(buzzor, 247, alarm_time);
+          delay(blink_time);
+          Serial.print("Wee");
+          
+          if (key_status == LOW) {key_status = digitalRead(button);}
+          
+          digitalWrite(red, LOW);
+          digitalWrite(green, HIGH);
+          
+          tone(buzzor, 262, alarm_time);
+          delay(blink_time);
+          Serial.print("Woo");
+          
+          if (key_status == LOW) {key_status = digitalRead(button);}
+        }
+        
         // Blinks between green and red lights
         // loop intruder tune
         // stops when button is pressed a.k.a. key_status == true
@@ -85,7 +123,7 @@ void loop() {
       // Door is closed
       if (already_open == true) {
         // Door has been closed
-        Serial.println("[ Up ][Already][Closed]");
+        // Serial.println("[ Up ][Already][Closed]");
         digitalWrite(red, HIGH);
         digitalWrite(green, LOW);
         //play closing tune
@@ -94,9 +132,11 @@ void loop() {
       }
       else /* (already_open == false) */ {
         // Door were already closed
-        Serial.println("[ Up ][  Were ][Closed]");
+        // Serial.println("[ Up ][  Were ][Closed]");
+        digitalWrite(red, HIGH);
+        digitalWrite(green, LOW);
       } 
     } 
   }
-  delay(1000);
+  delay(check_time);
 }
